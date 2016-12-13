@@ -13,6 +13,64 @@ By default the terminal is deployed on `/terminal` and the server WebSocket endp
 
 You can set `terminal.disabled` system property to `true` to deactivate the websocket endpoint.
 
+== Container requirement
+
+- CDI >= 1.1
+- WebSocket >= 1.0
+- Servlet >= 3.0
+
+== Overall usage
+
+The commands are split in "modes". A mode is a set of command. For instance by default you have `jmx`
+and `shell` modes. Once you selected a mode with `mode x` command you can call commands of that mode.
+
+Few piping operators have been implemented (based on Unix4j library):
+
+- grep
+- wc
+- uniq
+- tail
+- head
+- sort
+- sed
+- and a specific one "normalize-slashes" (replaces \ by /)
+
+== Extend
+
+You can extend it (core jar case) implementing CDI "command". Just decorate a normal scoped bean with `@Command`.
+
+[source,java]
+----
+import com.github.rmannibucau.terminal.command.Command;
+import org.unix4j.Unix4j;
+import org.unix4j.unix.ls.LsOption;
+import org.unix4j.unix.ls.LsOptions;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.websocket.Session;
+import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.function.BiFunction;
+import java.util.stream.Stream;
+
+@ApplicationScoped
+@Command(mode = "hello", name = "world", description = "say hello")
+public class Hello implements BiFunction<Session, String[], String> {
+    @Override
+    public String apply(final Session session, final String[] args) {
+        return "hello world";
+    }
+}
+----
+
+- args are the options passed to the command
+- session is the websocket session, you can store data in the user properties if needed
+- then in the terminal just type `mode hello` then `world` and you'll get the output `hello world`.
+
+TIP: it is recommanded to output errors instead of throwing exceptions
+
 == TODO
 
 - use a servlet to setup the websocket + make the endpoint configurable (can imply to filter the front to change the url)
