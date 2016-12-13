@@ -14,6 +14,8 @@
 
   <modules>
     <module>embedded-terminal-core</module>
+    <module>embedded-terminal-webapp</module>
+    <module>embedded-terminal-runner</module>
   </modules>
 
   <dependencies>
@@ -27,6 +29,12 @@
       <groupId>org.apache.geronimo.specs</groupId>
       <artifactId>geronimo-servlet_3.0_spec</artifactId>
       <version>1.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-jaxrs_2.0_spec</artifactId>
+      <version>1.0-alpha-1</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -45,11 +53,13 @@
       <groupId>org.apache.johnzon</groupId>
       <artifactId>jsonb-api</artifactId>
       <version>${johnzon.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.tomcat</groupId>
       <artifactId>tomcat-websocket-api</artifactId>
       <version>${tomcat.version}</version>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
@@ -62,6 +72,7 @@
 
   <properties>
     <johnzon.version>0.9.5</johnzon.version>
+    <meecrowave.version>0.0.1-SNAPSHOT</meecrowave.version>
     <tomcat.version>9.0.0.M15</tomcat.version>
   </properties>
 

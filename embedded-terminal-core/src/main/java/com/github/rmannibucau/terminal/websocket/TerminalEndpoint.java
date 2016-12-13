@@ -9,41 +9,41 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import javax.enterprise.context.Dependent;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.CDI;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
 import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
+import javax.websocket.CloseReason;
 import javax.websocket.DecodeException;
 import javax.websocket.Decoder;
 import javax.websocket.EncodeException;
 import javax.websocket.Encoder;
+import javax.websocket.Endpoint;
 import javax.websocket.EndpointConfig;
-import javax.websocket.OnClose;
-import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
 import javax.websocket.Session;
-import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.security.Principal;
 
 import static java.util.Optional.ofNullable;
 
-@Dependent
-@ServerEndpoint(
-        value = "/terminal/session",
-        decoders = TerminalEndpoint.RequestDecoder.class,
-        encoders = {TerminalEndpoint.ResponseEncoder.class, TerminalEndpoint.ValueEncoder.class})
-public class TerminalEndpoint {
-    private BeanManager beanManager;
+@Dependent // just to mark it as scanned, not a real cdi bean
+public class TerminalEndpoint extends Endpoint {
+    @Inject
+    private Event<SessionOpened> sessionOpenedEvent;
+
+    @Inject
+    private Event<SessionClosed> sessionClosedEvent;
+
+    @Inject
     private CommandExecutor executor;
+
+    @Inject
     private TerminalExtension extension;
+
     private CommandContext.Delegate context;
 
-    @OnOpen
-    public void onOpen(final Session session) {
-        beanManager = CDI.current().getBeanManager();
-        executor = lookup(beanManager, CommandExecutor.class);
-        extension = lookup(beanManager, TerminalExtension.class);
+    @Override
+    public void onOpen(final Session session, final EndpointConfig endpointConfig) {
         context = extension.getContext().newInstance();
 
         final Principal userPrincipal = session.getUserPrincipal();
@@ -55,11 +55,12 @@ public class TerminalEndpoint {
             }
         }
 
-        extension.getContext().withContext(context, () -> beanManager.fireEvent(new SessionOpened(session)));
+        extension.getContext().withContext(context, () -> sessionOpenedEvent.fire(new SessionOpened(session)));
+
+        session.addMessageHandler(Request.class, request -> TerminalEndpoint.this.onMessage(session, request));
     }
 
-    @OnMessage
-    public void onMessage(final Session session, final Request request) {
+    private void onMessage(final Session session, final Request request) {
         extension.getContext().withContext(context, () -> {
             try {
                 final String result = executor.execute(session, request.mode, request.command);
@@ -71,16 +72,12 @@ public class TerminalEndpoint {
         });
     }
 
-    @OnClose
-    public void onClose(final Session session) {
+    @Override
+    public void onClose(final Session session, final CloseReason reason) {
         extension.getContext().withContext(this.context, () -> {
-            beanManager.fireEvent(new SessionClosed(session));
+            sessionClosedEvent.fire(new SessionClosed(session));
             extension.getContext().destroy(this.context);
         });
-    }
-
-    private <T> T lookup(final BeanManager beanManager, final Class<T> type) {
-        return type.cast(beanManager.getReference(beanManager.resolve(beanManager.getBeans(type)), type, beanManager.createCreationalContext(null)));
     }
 
     @Data

@@ -54,7 +54,12 @@ export class TerminalComponent implements AfterViewInit, OnDestroy {
   }
 
   private connect() {
-    const url = ('http:' == window.location.protocol ? 'ws://' : 'wss://') + window.location.host + window.location.pathname + 'embedded-terminal/session';
+    // TODO: replace it by a rest call to retrieve the config?
+    const context = window.location.pathname.startsWith('/terminal') ? window.location.pathname.substring('/terminal'.length) : window.location.pathname;
+    const url = ('http:' == window.location.protocol ? 'ws://' : 'wss://') +
+      window.location.host + context +
+      (context.length > 0 && context.charAt(context.length - 1) != '/' ? '/' : '') +
+      'terminal/session';
     this.websocket = new window['WebSocket'](url);
     this.websocket.onopen = event => this.term.echo('Connected to the server.');
     this.websocket.onclose = event => {

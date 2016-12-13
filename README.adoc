@@ -1,0 +1,18 @@
+= Embedded Terminal
+
+Goal of the project is to propose a web terminal based on server commands.
+Idea is to be able to use it to debug easily an application/server.
+
+It comes in 3 flavors:
+
+- core jar: a dependency you can add to your war
+- webapp war: a war to deploy in your container
+- runner jar: an executable jar starting a web container
+
+By default the terminal is deployed on `/terminal` and the server WebSocket endpoint on `/terminal/session`.
+
+You can set `terminal.disabled` system property to `true` to deactivate the websocket endpoint.
+
+== TODO
+
+- use a servlet to setup the websocket + make the endpoint configurable (can imply to filter the front to change the url)
