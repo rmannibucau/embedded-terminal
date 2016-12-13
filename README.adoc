@@ -71,6 +71,13 @@ public class Hello implements BiFunction<Session, String[], String> {
 
 TIP: it is recommanded to output errors instead of throwing exceptions
 
+== Security
+
+You can use any servlet security if your container supports it (Tomcat, TomEE, Meecrowave do for instance).
+Just secure with BASIC or other the `/terminal/*` endpoints.
+
+If you are logged when accessing the terminal the user will be retrieved and shown in the prompt.
+
 == TODO
 
 - use a servlet to setup the websocket + make the endpoint configurable (can imply to filter the front to change the url)
