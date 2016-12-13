@@ -1,0 +1,100 @@
+.terminal {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+  box-shadow: 0 0 30px rgba(0,0,0,0.4);
+
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+}
+.terminal-window-handler {
+  text-align: center;
+  color: #525252;
+  padding: 5px 0;
+  margin: 0;
+  text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
+  font-size: 0.85em;
+  border: 1px solid #CCCCCC;
+  border-bottom: none;
+
+  -webkit-border-top-left-radius: 3px;
+  -webkit-border-top-right-radius: 3px;
+  -moz-border-radius-topleft: 3px;
+  -moz-border-radius-topright: 3px;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+
+  background: #f7f7f7; /* Old browsers */
+  background: -moz-linear-gradient(top,  #f7f7f7 0%, #B8B8B8 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f7f7f7), color-stop(100%,#B8B8B8)); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top,  #f7f7f7 0%,#B8B8B8 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top,  #f7f7f7 0%,#B8B8B8 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(top,  #f7f7f7 0%,#B8B8B8 100%); /* IE10+ */
+  background: linear-gradient(to bottom,  #f7f7f7 0%,#B8B8B8 100%); /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f7f7f7', endColorstr='#B8B8B8',GradientType=0 ); /* IE6-9 */
+}
+.terminal-output, .cmd {
+  margin: 0;
+  background: #141414;
+  color: #45D40C;
+  display: block;
+}
+.command > div, .cmd {
+  word-wrap: break-word;
+  font-family: monospace;
+}
+.cmd > textarea {
+  visibility: hidden;
+  padding: 0;
+  boder: 0;
+  height: 1.3em;
+  font: 10px monospace;
+}
+.cmd .cursor.blink {
+    -webkit-animation: terminal-blink 1s infinite steps(1, start);
+       -moz-animation: terminal-blink 1s infinite steps(1, start);
+        -ms-animation: terminal-blink 1s infinite steps(1, start);
+            animation: terminal-blink 1s infinite steps(1, start);
+}
+@-webkit-keyframes terminal-blink {
+  0%, 100% {
+      background-color: #f7f7f7;
+      color: #aaa;
+  }
+  50% {
+      background-color: #bbb;
+      color: #f7f7f7;
+  }
+}
+
+@-ms-keyframes terminal-blink {
+  0%, 100% {
+      background-color: #f7f7f7;
+      color: #aaa;
+  }
+  50% {
+      background-color: #bbb;
+      color: #f7f7f7;
+  }
+}
+
+@-moz-keyframes terminal-blink {
+  0%, 100% {
+      background-color: #f7f7f7;
+      color: #aaa;
+  }
+  50% {
+      background-color: #bbb;
+      color: #f7f7f7;
+  }
+}
+@keyframes terminal-blink {
+  0%, 100% {
+      background-color: #f7f7f7;
+      color: #aaa;
+  }
+  50% {
+      background-color: #bbb; /* not #aaa because it's seems there is Google Chrome bug */
+      color: #f7f7f7;
+  }
+}
