@@ -57,7 +57,7 @@ public class TerminalExtension implements Extension {
     };
     private String help;
 
-    void addScope(@Observes final BeforeBeanDiscovery bbd) {
+    void addScope(@Observes final BeforeBeanDiscovery bbd, final BeanManager bm) {
         bbd.addScope(CommandScoped.class, true, false);
     }
 
