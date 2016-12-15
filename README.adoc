@@ -12,6 +12,8 @@ It comes in 3 flavors:
 By default the terminal is deployed on `/terminal` and the server WebSocket endpoint on `/terminal/session`.
 
 You can set `terminal.disabled` system property to `true` to deactivate the websocket endpoint.
+You can also change the endpoint to use for the terminal setting `terminal.mapping` to another mapping, default is `/terminal`
+(don't put `/*` at the end, this will be done automatically).
 
 == Container requirement
 
@@ -77,7 +79,3 @@ You can use any servlet security if your container supports it (Tomcat, TomEE, M
 Just secure with BASIC or other the `/terminal/*` endpoints.
 
 If you are logged when accessing the terminal the user will be retrieved and shown in the prompt.
-
-== TODO
-
-- use a servlet to setup the websocket + make the endpoint configurable (can imply to filter the front to change the url)

@@ -27,7 +27,7 @@ module.exports = function() {
      'app': './src/main.ts'
     },
     output: {
-      path: '../../../target/classes/META-INF/resources/terminal',
+      path: '../../../target/classes/embedded-terminal/web-resources',
       publicPath: rootPath,
       filename: !isDev ? 'js/[name].[hash].js' : 'js/[name].js',
       chunkFilename: !isDev ? '[id].[hash].chunk.js' : '[id].chunk.js'

@@ -56,9 +56,7 @@
         <groupId>org.apache.meecrowave</groupId>
         <artifactId>meecrowave-maven-plugin</artifactId>
         <version>${meecrowave.version}</version>
-        <configuration>
-          <context>/demo</context>
-          <webResourceCached>false</webResourceCached>
+        <configuration><!-- -Dterminal.environment=dev for resource reloading -->
           <users>
             <user>pwd</user>
           </users>
