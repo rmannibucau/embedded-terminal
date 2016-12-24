@@ -57,6 +57,7 @@
         <artifactId>meecrowave-maven-plugin</artifactId>
         <version>${meecrowave.version}</version>
         <configuration><!-- -Dterminal.environment=dev for resource reloading -->
+          <webResourceCached>false</webResourceCached>
           <users>
             <user>pwd</user>
           </users>
@@ -114,6 +115,19 @@
             </goals>
             <configuration>
               <arguments>run build</arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <id>watch</id>
+            <phase/>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <configuration>
+              <arguments>run watch</arguments>
+              <environmentVariables>
+                <APP_ENV>dev</APP_ENV>
+              </environmentVariables>
             </configuration>
           </execution>
         </executions>
