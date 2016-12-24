@@ -1,6 +1,8 @@
 package com.github.rmannibucau.terminal.command;
 
+import org.apache.meecrowave.Meecrowave;
 import org.apache.meecrowave.junit.MonoMeecrowave;
+import org.apache.meecrowave.testing.ConfigurationInject;
 import org.apache.meecrowave.testing.Injector;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,6 +23,9 @@ public class CommandExecutorTest {
     @Inject
     private CommandExecutor executor;
 
+    @ConfigurationInject
+    private Meecrowave.Builder config;
+
     private Session session;
 
     @Before
@@ -35,6 +40,12 @@ public class CommandExecutorTest {
                     }
                     return null;
                 }));
+    }
+
+    @Test
+    public void methodCommand() {
+        final String result = executor.execute(session, "network", "test --host=localhost --port=" + config.getHttpPort());
+        assertTrue(result, result.trim().startsWith("Connected in"));
     }
 
     @Test

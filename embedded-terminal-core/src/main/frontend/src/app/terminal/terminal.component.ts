@@ -7,6 +7,7 @@ import * as $ from 'jquery';
 })
 export class TerminalComponent implements AfterViewInit, OnDestroy {
   private term: any;
+  private username = '';
   private mode = '__default__';
   private prompt = '$ ';
   private websocket: any;
@@ -21,6 +22,7 @@ export class TerminalComponent implements AfterViewInit, OnDestroy {
         instance.clear();
       } else if (cmd.indexOf('mode ') == 0) {
         this.mode = cmd.substring(5);
+        this.resetPrompt();
       } else if (cmd === 'show mode') {
         this.term.echo(this.mode);
       } else if (cmd === 'history') {
@@ -66,10 +68,15 @@ export class TerminalComponent implements AfterViewInit, OnDestroy {
 
   private onResponse(response) {
     if (response.type === 'username') {
-      this.prompt = response.value + ' $ ';
-      this.term.set_prompt(this.prompt);
+      this.username = response.value;
+      this.resetPrompt();
     } else {
       this.term.echo(response.response || response.error || 'no output');
     }
+  }
+
+  private resetPrompt() {
+    this.prompt = this.username + ' (' + (this.mode == '__default__' ? 'default' : this.mode) + ') $ ';
+    this.term.set_prompt(this.prompt);
   }
 }

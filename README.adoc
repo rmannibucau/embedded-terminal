@@ -73,6 +73,24 @@ public class Hello implements BiFunction<Session, String[], String> {
 
 TIP: it is recommanded to output errors instead of throwing exceptions
 
+If you need a finer typing of your command you can use any CLI framework of the light embedded one:
+
+[source]
+----
+@ApplicationScoped
+public class CheckPort {
+    @Command(mode = "network", description = "test if a port is open from this server")
+    public String test(@Arg(value = "host", description = "the host to use to try to connect") final String host,
+                       @Arg(value = "port", required = true) final int port,
+                       @Arg(value = "timeout", required = true) final int timeout) {
+        return "...";
+    }
+}
+----
+
+This "method oriented" API supports String, primitives and list of primitive wrappers. Name will default to method name if not set.
+If you need to maintain some state between commands you can also add a `Session` parameter and get the websocket session directly.
+
 == Security
 
 You can use any servlet security if your container supports it (Tomcat, TomEE, Meecrowave do for instance).

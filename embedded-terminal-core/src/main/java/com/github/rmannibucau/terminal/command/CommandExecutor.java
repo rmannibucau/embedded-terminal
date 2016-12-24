@@ -20,9 +20,12 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 import javax.websocket.Session;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.function.BiFunction;
 
 @ApplicationScoped
@@ -38,25 +41,40 @@ public class CommandExecutor {
             return "Command is empty";
         }
 
-        final Collection<Collection<String>> commands = parse(command);
-        final Iterator<Collection<String>> cmdIterator = commands.iterator();
+        final Collection<List<String>> commands = parse(command);
+        final Iterator<List<String>> cmdIterator = commands.iterator();
 
-        final Collection<String> opts = cmdIterator.next();
+        final List<String> opts = cmdIterator.next();
         final Iterator<String> iterator = opts.iterator();
         final String cmd = iterator.next();
         iterator.remove();
-        final BiFunction<Session, String[], String> commandHandler = extension.get(mode, cmd);
+        BiFunction<Session, String[], String> commandHandler = extension.get(mode, cmd);
+        if (commandHandler == null) { // try a passthrough handler
+            commandHandler = extension.get(mode, "");
+            if (commandHandler == null) {
+                return "No command matching '" + command + "'";
+            } else { // add it back
+                opts.add(0, cmd);
+            }
+        }
 
         // not a real streaming but good enough for now, if we impl websocket streaming we need to rethink it
-        final String result = commandHandler.apply(session, opts.toArray(new String[opts.size()]));
+        String result;
+        try {
+            result = commandHandler.apply(session, opts.toArray(new String[opts.size()]));
+        } catch (final RuntimeException re) {
+            final StringWriter writer = new StringWriter();
+            re.printStackTrace(new PrintWriter(writer));
+            result = "[ERROR] " + writer.toString();
+        }
         if (cmdIterator.hasNext()) { // handle pipes
             return pipes(cmdIterator, result);
         }
         return result;
     }
 
-    private String pipes(final Iterator<Collection<String>> cmdIterator, final String result) {
-         Unix4jCommandBuilder builder = Unix4j.fromString(result);
+    private String pipes(final Iterator<List<String>> cmdIterator, final String result) {
+        Unix4jCommandBuilder builder = Unix4j.fromString(result);
 
         while (cmdIterator.hasNext()) {
             final Collection<String> pipeOpts = cmdIterator.next();
@@ -189,10 +207,10 @@ public class CommandExecutor {
         return builder.toStringResult();
     }
 
-    private Collection<Collection<String>> parse(final String raw) {
-        final Collection<Collection<String>> results = new LinkedList<>();
+    private Collection<List<String>> parse(final String raw) {
+        final Collection<List<String>> results = new LinkedList<>();
 
-        Collection<String> result = new LinkedList<>();
+        List<String> result = new LinkedList<>();
 
         Character end = null;
         boolean escaped = false;
